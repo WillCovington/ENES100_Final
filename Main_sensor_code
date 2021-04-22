@@ -85,5 +85,5 @@ void loop() {
     Serial.println("BLUE");
   }
   
-delay(2000);
+delay(100);
 }
