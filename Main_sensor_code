@@ -1,7 +1,13 @@
-// Stores frequency read by the photodiodes
+#include <Servo.h>
+int redCounter = 0;
+int blueCounter = 0;
+int greenCounter = 0;
+int yellowCounter = 0;
 int redFrequency = 0;
 int greenFrequency = 0;
 int blueFrequency = 0;
+int servoPin = 3;
+Servo Servo1;
 
 int redColor = 0;
 int greenColor = 0;
@@ -29,6 +35,9 @@ void setup() {
   
    // Begins serial communication 
   Serial.begin(9600);
+
+  // Tell the arduino which pin we're going to be operating off of
+  Servo1.attach(servoPin);
 }
 void loop() {
   // Setting RED (R) filtered photodiodes to be read
@@ -74,16 +83,66 @@ void loop() {
   // a message in the serial monitor
  if(redColor+60 > blueColor && greenColor+50 > blueColor ){
     Serial.println("YELLOW");
-  }
+    yellowCounter++;
+    Serial.print("Yellow Count: ");
+    Serial.println(yellowCounter);
+     }
   else if(redColor > greenColor && redColor > blueColor){
       Serial.println("RED");
+      redCounter++;
+      Serial.print("Red Count: ");
+      Serial.println(redCounter);
   }
   else if(greenColor > redColor && greenColor+20 > blueColor){
     Serial.println("GREEN");
+    greenCounter++;
+    Serial.print("Green Count: ");
+    Serial.println(greenCounter);
   }
   else if(blueColor > redColor && blueColor > greenColor){
     Serial.println("BLUE");
+    blueCounter++;
+    Serial.print("Blue Count: ");
+    Serial.println(blueCounter);
   }
   
 delay(100);
+
+// Now we need to indicate to the servos when to operate, which we can do by 
+// telling the servos to only operate in the direction we want it to once a 
+// "check threshold" has been passed (probably 10 instances of the same color
+// being recorded)
+
+if(yellowCounter == 10){
+  Servo1.write(180);
+  Serial.println("Rotating 180 Degrees");
+  delay(5000);
+  Servo1.write(0);
+  yellowCounter = 0;
+}
+if(blueCounter == 10){
+  Servo1.write(135);
+  Serial.println("Rotating 120 Degrees");
+  delay(5000);
+  Servo1.write(0);
+  blueCounter = 0;
+}
+if(redCounter == 10){
+  Servo1.write(90);
+  Serial.println("Rotating 90 Degrees");
+  delay(5000);
+  Servo1.write(0);
+  redCounter = 0;
+}
+if(greenCounter == 10){
+  Servo1.write(0);
+  Serial.println("Rotating 0 Degrees");
+  delay(5000);
+  Servo1.write(0);
+  greenCounter = 0;
+}
+
+
+
+
 }
